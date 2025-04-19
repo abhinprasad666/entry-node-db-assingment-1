@@ -3,72 +3,108 @@
 
 //get all books controller
 
-export const getAllBooks=(req,res)=>{
+export const getAllBooks=async(req,res)=>{
 
     try {
+        const allBooks=await Book?.find()
         res.status(200).json({
             success:true,
-            message:"Get all books controller"
+            count:Book.length,
+            allBooks
         })
 
     } catch (error) {
-        res.status(500).json({error:error.messag})
+        res.status(500).json({error:error.message})
     }
 }
 
 //get single book controller
 
-export const getSingleBook=(req,res)=>{
+export const getSingleBook=async(req,res)=>{
 
     try {
-        res.status(200).json({
-            success:true,
-            message:"Get single book "
+        const singleBook=await Book?.findById(req.params.id)
+
+        if(!singleBook){
+          return  res.status(404).json({
+             success:flase,
+             error:" not found"})
+        }
+        res.status(201).json({
+            message:true,
+            count:singleBook.length,
+            singleBook
         })
 
     } catch (error) {
-        res.status(500).json({error:error.messag})
+        res.status(500).json({error:error.message})
     }
 }
 
 // add new book
-export const addNewBook=(req,res)=>{
+export const addNewBook=async(req,res)=>{
 
     try {
-        res.status(200).json({
-            success:true,
-            message:"Add new book "
-        })
+
+   const id=req.body
+        const newBook=await Book?.create(id)
+        res.status(201).json(newBook)
 
     } catch (error) {
-        res.status(500).json({error:error.messag})
+        res.status(500).json({error:error.message})
     }
 }
 
 // update book
-export const updateBook=(req,res)=>{
+export const updateBook=async(req,res)=>{
 
     try {
-        res.status(200).json({
+        const id=(req.params.id)
+        
+        const existBook=await Book?.findById(id)
+        if(!existBook){
+            res.status(400).json({success:false,error:"not found"})
+        }
+    const UpdateBook= await Book.findByIdAndUpdate(
+        id,
+        req.body,
+        {new:true,
+        runValidators:true
+
+    })
+        
+        res.status(201).json({
             success:true,
-            message:"Update Book"
+           message:" Updated successfully"
         })
 
     } catch (error) {
-        res.status(500).json({error:error.messag})
+        res.status(500).json({error:error.message})
     }
 }
 
 // delete single book
-export const deleteBook=(req,res)=>{
+export const deleteBook=async(req,res)=>{
 
     try {
+        const id=req.params.id
+        console.log("delete id:",id)
+        const book=await Book?.findById(id)
+      
+        if(!book){
+                res.status(404).json({
+                success:false,
+                error:" not found"
+            })
+        }
+             await author.deleteOne()
         res.status(200).json({
             success:true,
-            message:"delete book"
+            message:"deleted"
+
         })
 
     } catch (error) {
-        res.status(500).json({error:error.messag})
+        res.status(500).json({error:error.message})
     }
 }
